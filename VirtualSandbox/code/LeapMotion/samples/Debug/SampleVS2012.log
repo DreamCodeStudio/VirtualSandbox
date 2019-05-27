@@ -1,0 +1,2 @@
+﻿  Sample.cpp
+LINK : fatal error LNK1104: Datei "msvcprtd.lib" kann nicht geöffnet werden.

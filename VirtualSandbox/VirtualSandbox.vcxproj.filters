@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\App">
+      <UniqueIdentifier>{80eab54d-e32c-4af6-ae70-856cf97a47a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App">
+      <UniqueIdentifier>{c771f9a7-e07b-4243-bce4-420cc47092ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\App\WinMotion">
+      <UniqueIdentifier>{52a920d8-0807-4368-89f9-e841504c99fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\WinMotion">
+      <UniqueIdentifier>{0a04caa6-d6b6-4d0f-8652-ec556a2b227d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\App\World">
+      <UniqueIdentifier>{682f1ad9-50dc-49e1-8a0c-48a4ff881e19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\App\World">
+      <UniqueIdentifier>{76f949bf-cc84-4c10-8437-79934eafb5f7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="code\main.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="code\App\App.cpp">
+      <Filter>Quelldateien\App</Filter>
+    </ClCompile>
+    <ClCompile Include="code\App\WinMotion\WinMotion.cpp">
+      <Filter>Quelldateien\App\WinMotion</Filter>
+    </ClCompile>
+    <ClCompile Include="code\App\World\World.cpp">
+      <Filter>Quelldateien\App\World</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="code\App\App.h">
+      <Filter>Headerdateien\App</Filter>
+    </ClInclude>
+    <ClInclude Include="code\App\WinMotion\WinMotion.h">
+      <Filter>Headerdateien\App\WinMotion</Filter>
+    </ClInclude>
+    <ClInclude Include="code\App\World\World.h">
+      <Filter>Headerdateien\App\World</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
