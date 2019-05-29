@@ -8,7 +8,10 @@
    the interaction between the user's hand and the dynamic surface 
 */
 
-#define WORLD_SIZE 20
+#define WORLD_SIZE 80
+#define BLOCK_SIZE 1
+#define GROUND_HEIGHT 50
+//#define DYNAMIC_RANGE
 
 class World
 {
@@ -17,11 +20,14 @@ class World
 		World();
 		World(irr::scene::ISceneManager *manager);
 
-		void Update();
-		void Render();
+		void Update(irr::core::vector3df handPosition, int sphereRadius);
+		void LoadAsMesh();
 
 	private:
 
-		irr::scene::ISceneNode* _worldBlocks[WORLD_SIZE][WORLD_SIZE];
+		float GetDistanceXZLayer(irr::core::vector3df p1, irr::core::vector3df p2);
+
+		irr::scene::IAnimatedMeshSceneNode* _worldBlocks[WORLD_SIZE][WORLD_SIZE];
+		irr::scene::ILightSceneNode* _light;
 
 };

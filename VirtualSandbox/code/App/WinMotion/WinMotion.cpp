@@ -16,7 +16,7 @@ IrrMotion::IrrMotion(irr::scene::ISceneManager *manager)
 	}
 	std::cout << "LeapMotion controller connected!" << std::endl;
 
-	this->SetupHandBlocks(); //Create all blocks for the hand model
+	this->SetupHandBlocks();
 }
 
 /* ################ Public methods ################ */
@@ -32,6 +32,34 @@ void IrrMotion::Update()
 	//Update the position of every block in the hand model
 	this->UpdateHandBlocks();
 	this->InterpolateHandBlocks();
+	
+}
+
+irr::core::vector3df IrrMotion::GetPalmPosition()
+{
+	return _handBlocks[0]->getAbsolutePosition();
+}
+
+int IrrMotion::GetSphereRadius()
+{
+	Leap::Frame frame = _leapController.frame();
+	Leap::HandList handList = frame.hands();
+	Leap::Hand firstHand = handList[0];
+	
+	#ifdef DYNAMIC_RANGE
+	Leap::Hand secondHand = handList[1];
+
+	if (firstHand.isLeft())
+	{
+		Leap::Hand save = firstHand;
+		firstHand = secondHand;
+		secondHand = save;
+	}
+
+	return static_cast<int>(secondHand.sphereRadius());
+	#endif
+
+	return static_cast<int>(firstHand.sphereRadius());
 }
 
 /* ################ Private methods ################ */
@@ -46,7 +74,7 @@ void IrrMotion::SetupHandBlocks()
 	//The blocks which are positioned on every bone
 	for (unsigned int i = 0; i < 15; i++)
 	{
-		_handBlocks.push_back(_manager->addCubeSceneNode(2, 0, -1));
+		_handBlocks.push_back(_manager->addCubeSceneNode(2, 0, -1, irr::core::vector3df(0, 50, 0)));
 	}
 
 	//Interpolated blocks
@@ -61,6 +89,25 @@ void IrrMotion::UpdateHandBlocks()
 	Leap::Frame frame = _leapController.frame();
 	Leap::HandList handList = frame.hands();
 	Leap::Hand firstHand = handList[0];
+
+	//If DYNAMIC_RANGE is defined 
+	#ifdef DYNAMIC_RANGE
+	Leap::Hand secondHand = handList[1];
+	if (!firstHand.isValid() || !secondHand.isValid())
+	{
+		return;
+	}
+	if (firstHand.isLeft())
+	{
+		Leap::Hand save = firstHand;
+		firstHand = secondHand;
+		secondHand = save;
+	}
+	#endif
+	if (!firstHand.isValid())
+	{
+		return;
+	}
 
 	//Thumb
 	_handBlocks[0]->setPosition(irr::core::vector3df(irr::core::vector3df(firstHand.fingers()[0].bone(Leap::Bone::Type::TYPE_METACARPAL).center().x * 0.2f,
