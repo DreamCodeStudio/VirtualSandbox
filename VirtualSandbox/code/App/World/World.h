@@ -8,7 +8,7 @@
    the interaction between the user's hand and the dynamic surface 
 */
 
-#define WORLD_SIZE 120
+#define WORLD_SIZE 80
 #define BLOCK_SIZE 1
 #define GROUND_HEIGHT 50
 //#define DYNAMIC_RANGE
