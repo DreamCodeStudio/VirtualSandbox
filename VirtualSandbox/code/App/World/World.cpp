@@ -21,9 +21,28 @@ World::World(irr::scene::ISceneManager *manager)
 											irr::core::vector3df(0, 0, 0), irr::core::vector3df(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE));
 		}
 	}
+
+	//Set start values
+	_markedBlock = nullptr;
 }
 
-void World::Update(irr::core::vector3df handPosition, int sphereRadius)
+void World::Update(irr::core::vector3df handPosition, int sphereRadius, bool rightHand)
+{
+	if (rightHand == true)
+	{
+		//If the user uses his right hand, the surface should get manipulated
+		this->UpdateSurface(handPosition, sphereRadius);
+	}
+	else
+	{
+		//If the user uses his left hand, he wants to mark a location
+		this->UpdateViewpoints(handPosition, sphereRadius);
+	}
+}
+
+/* ################## Private ##################### */
+
+void World::UpdateSurface(irr::core::vector3df handPosition, int sphereRadius)
 {
 	//Update the World
 	if (sphereRadius < 40)
@@ -32,30 +51,22 @@ void World::Update(irr::core::vector3df handPosition, int sphereRadius)
 		return;
 	}
 
-	//The influence range for the blocks depends on how far the user has opend his hand
-	int influenceRange = 14; 
-	
-	//If DYNAMIC_RANGE is defined, the influence range for the blocks is depending on the left hand position of the user
-	#ifdef DYNAMIC_RANGE
-	influenceRange = static_cast<int>(sphereRadius * 0.25f);
-	#endif 
-
 	//Now we can create the hill
 	for (unsigned int x = 0; x < WORLD_SIZE; x++)
 	{
 		for (unsigned int y = 0; y < WORLD_SIZE; y++)
 		{
-			if (GetDistanceXZLayer(_worldBlocks[x][y]->getAbsolutePosition(), handPosition) < influenceRange)
+			if (GetDistanceXZLayer(_worldBlocks[x][y]->getAbsolutePosition(), handPosition) < INFLUENCE_RANGE)
 			{
 				//Get the height of the player hand 
 				float relativeHeight = handPosition.Y - GROUND_HEIGHT;
 
 				//Get the distance between the mountains top and the block on the x-z layer
 				float centerDistance = sqrt(pow(_worldBlocks[x][y]->getAbsolutePosition().X - handPosition.X, 2) +
-											pow(_worldBlocks[x][y]->getAbsolutePosition().Z - handPosition.Z, 2));
+					pow(_worldBlocks[x][y]->getAbsolutePosition().Z - handPosition.Z, 2));
 
 				//Calculate how much we have to distract from the mountains top depending on how far the block is away
-				float heightSub = static_cast<float>((centerDistance * (relativeHeight / sqrt(pow(influenceRange, 2) + pow(influenceRange, 2)))));
+				float heightSub = static_cast<float>((centerDistance * (relativeHeight / sqrt(pow(INFLUENCE_RANGE, 2) + pow(INFLUENCE_RANGE, 2)))));
 
 				//Check if the user would accidently lower the height of the block when he truly wants to rise it
 				if (handPosition.Y > _worldBlocks[x][y]->getAbsolutePosition().Y &&
@@ -68,7 +79,7 @@ void World::Update(irr::core::vector3df handPosition, int sphereRadius)
 
 					this->UpdateBlockColor(_worldBlocks[x][y]);
 				}
-				
+
 				//Check if the user accidently highers the height of the block
 				if (handPosition.Y < _worldBlocks[x][y]->getAbsolutePosition().Y &&
 					handPosition.Y - heightSub < _worldBlocks[x][y]->getAbsolutePosition().Y)
@@ -85,7 +96,58 @@ void World::Update(irr::core::vector3df handPosition, int sphereRadius)
 	}
 }
 
-/* ################## Private ##################### */
+void World::UpdateViewpoints(irr::core::vector3df handPosition, int sphereRadius)
+{
+	//Mark the location under the user's hand
+	bool marked = false;
+
+	//First delete previously marked location
+	if (_markedBlock != nullptr)
+	{
+		_markedBlock->remove();
+	}
+	
+	for (unsigned int x = 0; x < WORLD_SIZE; x++)
+	{
+		for (unsigned int y = 0; y < WORLD_SIZE; y++)
+		{
+			//If the distance on the x-z layer is under 1, we are below the user's hand
+			if (this->GetDistanceXZLayer(_worldBlocks[x][y]->getAbsolutePosition(), handPosition) <= 1 && !marked)
+			{
+				//If the block is under the user's hand, mark it red
+				_markedBlock = _manager->addAnimatedMeshSceneNode(_manager->getMesh("Models\\LocMarkBlock\\LocMarkBlock.obj"),
+					0, -1, irr::core::vector3df(_worldBlocks[x][y]->getAbsolutePosition().X,
+												_worldBlocks[x][y]->getAbsolutePosition().Y + BLOCK_SIZE,
+												_worldBlocks[x][y]->getAbsolutePosition().Z));
+
+				marked = true;
+			}
+			else
+			{
+				//Otherwise turn it back to its original color
+				this->UpdateBlockColor(_worldBlocks[x][y]);
+			}
+		}
+	}
+
+	if (sphereRadius < 50)
+	{
+		//If the new position is near a previously saved one, the user planted it accidently
+		for (unsigned int i = 0; i < _savedBlocks.size(); i++)
+		{
+			//If the distaance is less than 3 the user probably planted is accidently
+			if (GetDistanceXZLayer(_savedBlocks[i]->getAbsolutePosition(),
+				_markedBlock->getAbsolutePosition()) < 3)
+			{
+				return;
+			}
+		}
+
+		//If not, store the block 
+		_savedBlocks.push_back(_markedBlock);
+		_markedBlock = nullptr;
+	}
+}
 
 float World::GetDistanceXZLayer(irr::core::vector3df p1, irr::core::vector3df p2)
 {
@@ -94,14 +156,17 @@ float World::GetDistanceXZLayer(irr::core::vector3df p1, irr::core::vector3df p2
 
 void World::UpdateBlockColor(irr::scene::IAnimatedMeshSceneNode *block)
 {
+	//If the block is below height 40 -> it should be water
 	if (block->getAbsolutePosition().Y <= 40)
 	{
 		block->setMesh(_manager->getMesh("Models\\WaterBlock\\WaterBlock.obj"));
 	}
-	else if (block->getAbsolutePosition().Y >= 30 && block->getAbsolutePosition().Y <= 70)
+	//If the block is between height 40 and 70 it should be grass
+	else if (block->getAbsolutePosition().Y >= 40 && block->getAbsolutePosition().Y <= 70)
 	{
 		block->setMesh(_manager->getMesh("Models\\GrassBlock\\GrassBlock.obj"));
 	}
+	//If the block is over the height of 70 it should be stone
 	else if (block->getAbsolutePosition().Y >= 70)
 	{
 		block->setMesh(_manager->getMesh("Models\\StoneBlock\\StoneBlock.obj"));

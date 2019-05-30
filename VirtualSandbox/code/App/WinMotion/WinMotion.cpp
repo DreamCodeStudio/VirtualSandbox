@@ -45,21 +45,17 @@ int IrrMotion::GetSphereRadius()
 	Leap::Frame frame = _leapController.frame();
 	Leap::HandList handList = frame.hands();
 	Leap::Hand firstHand = handList[0];
-	
-	#ifdef DYNAMIC_RANGE
-	Leap::Hand secondHand = handList[1];
-
-	if (firstHand.isLeft())
-	{
-		Leap::Hand save = firstHand;
-		firstHand = secondHand;
-		secondHand = save;
-	}
-
-	return static_cast<int>(secondHand.sphereRadius());
-	#endif
 
 	return static_cast<int>(firstHand.sphereRadius());
+}
+
+bool IrrMotion::IsRightHand()
+{
+	Leap::Frame frame = _leapController.frame();
+	Leap::HandList handList = frame.hands();
+	Leap::Hand firstHand = handList[0];
+
+	return firstHand.isRight();
 }
 
 /* ################ Private methods ################ */
@@ -74,7 +70,7 @@ void IrrMotion::SetupHandBlocks()
 	//The blocks which are positioned on every bone
 	for (unsigned int i = 0; i < 15; i++)
 	{
-		_handBlocks.push_back(_manager->addCubeSceneNode(2, 0, -1, irr::core::vector3df(0, 50, 0)));
+		_handBlocks.push_back(_manager->addCubeSceneNode(2, 0, -1, irr::core::vector3df(0, 5000, 0)));
 	}
 
 	//Interpolated blocks
@@ -90,20 +86,6 @@ void IrrMotion::UpdateHandBlocks()
 	Leap::HandList handList = frame.hands();
 	Leap::Hand firstHand = handList[0];
 
-	//If DYNAMIC_RANGE is defined 
-	#ifdef DYNAMIC_RANGE
-	Leap::Hand secondHand = handList[1];
-	if (!firstHand.isValid() || !secondHand.isValid())
-	{
-		return;
-	}
-	if (firstHand.isLeft())
-	{
-		Leap::Hand save = firstHand;
-		firstHand = secondHand;
-		secondHand = save;
-	}
-	#endif
 	if (!firstHand.isValid())
 	{
 		return;

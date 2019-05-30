@@ -12,8 +12,6 @@
 
 #define INTERPOLATED_BLOCK_AMOUNT 10 //How many blocks get interpolated between every bone in the hand
 
-//#define DYNAMIC_RANGE
-
 class IrrMotion
 {
 	public:
@@ -27,6 +25,7 @@ class IrrMotion
 
 		irr::core::vector3df GetPalmPosition();
 		int GetSphereRadius();
+		bool IsRightHand();
 
 	private:    //Methods
 

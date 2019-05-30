@@ -3,7 +3,7 @@
 App::App()
 {
 	//Create graphical window
-	_device = irr::createDevice(irr::video::EDT_DIRECT3D9, irr::core::dimension2d<irr::u32>(1920, 1080), 16U, false, true, false, 0);
+	_device = irr::createDevice(irr::video::EDT_DIRECT3D9, irr::core::dimension2d<irr::u32>(1920, 1080), 16U, false, true, true, 0);
 
 	//Get the video driver
 	_driver = _device->getVideoDriver();
@@ -40,7 +40,7 @@ void App::Update()
 {
 	//Update everything here
 	_hand.Update();
-	_world.Update(_hand.GetPalmPosition(), _hand.GetSphereRadius());
+	_world.Update(_hand.GetPalmPosition(), _hand.GetSphereRadius(), _hand.IsRightHand());
 }
 
 void App::Render()
