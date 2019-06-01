@@ -29,7 +29,8 @@ class World
 	private:
 
 		void UpdateSurface(irr::core::vector3df handPosition, int sphereRadius);
-		void UpdateViewpoints(irr::core::vector3df handPosition, int sphereRadius);
+		void HandleViewpointInput(irr::core::vector3df handPosition, int sphereRadius);
+		void UpdateViewpointConnections();
 
 		float GetDistanceXZLayer(irr::core::vector3df p1, irr::core::vector3df p2);
 		void UpdateBlockColor(irr::scene::IAnimatedMeshSceneNode *block);
@@ -39,6 +40,7 @@ class World
 
 		irr::scene::IAnimatedMeshSceneNode* _markedBlock;
 		std::vector<irr::scene::IAnimatedMeshSceneNode*> _savedBlocks;
+		std::vector<irr::scene::ISceneNode*> _lines;
 
 		irr::scene::ILightSceneNode* _light;
 		irr::scene::ISceneManager* _manager;

@@ -4,12 +4,13 @@ App::App()
 {
 	//Create graphical window
 	_device = irr::createDevice(irr::video::EDT_DIRECT3D9, irr::core::dimension2d<irr::u32>(1920, 1080), 16U, false, true, true, 0);
-
+	
 	//Get the video driver
 	_driver = _device->getVideoDriver();
 
 	//Get scene manager
 	_manager = _device->getSceneManager();
+
 
 	//Add camera to the scene
 	_camera = _manager->addCameraSceneNodeMaya(0, -1500, 200, 1500, -1, 70);
