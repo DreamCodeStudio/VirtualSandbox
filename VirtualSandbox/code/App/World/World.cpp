@@ -40,6 +40,8 @@ void World::Update(irr::core::vector3df handPosition, int sphereRadius, bool rig
 	}
 
 	this->UpdateViewpointConnections();
+
+	//Set the light position behind the player's camera, so he has always a well eluminated scene
 	_light->setPosition(_manager->getActiveCamera()->getAbsolutePosition() * 1.5f);
 }
 
